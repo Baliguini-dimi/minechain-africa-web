@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import LoginPage from './features/auth/LoginPage.jsx'
 import ProtectedRoute from './features/auth/ProtectedRoute.jsx'
 import AppLayout from './layouts/AppLayout.jsx'
+import OrganizationsListPage from './features/organizations/OrganizationsListPage.jsx'
 
 function App() {
   return (
@@ -12,9 +13,7 @@ function App() {
         element={
           <ProtectedRoute>
             <AppLayout>
-              <div className="font-body text-text-primary">
-                Tableau de bord (à construire)
-              </div>
+              <OrganizationsListPage />
             </AppLayout>
           </ProtectedRoute>
         }
