@@ -1,8 +1,11 @@
+import { useState } from 'react'
 import { useOrganizations } from './useOrganizations'
 import StatusBadge from '../../components/StatusBadge'
+import OrganizationFormModal from './OrganizationFormModal'
 
 export default function OrganizationsListPage() {
   const { data, isLoading, isError } = useOrganizations()
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   if (isLoading) {
     return <p className="font-body text-text-secondary">Chargement des organisations...</p>
@@ -24,7 +27,10 @@ export default function OrganizationsListPage() {
         <h2 className="font-display text-2xl font-semibold text-text-primary">
           Organisations
         </h2>
-        <button className="px-4 py-2 rounded bg-accent text-white font-body text-sm font-medium hover:opacity-90">
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="px-4 py-2 rounded bg-accent text-white font-body text-sm font-medium hover:opacity-90"
+        >
           Nouvelle organisation
         </button>
       </div>
@@ -72,6 +78,10 @@ export default function OrganizationsListPage() {
             </tbody>
           </table>
         </div>
+      )}
+
+      {isModalOpen && (
+        <OrganizationFormModal onClose={() => setIsModalOpen(false)} />
       )}
     </div>
   )
