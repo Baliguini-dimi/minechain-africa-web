@@ -1,1 +1,29 @@
 @import "tailwindcss";
+
+@import "@fontsource/big-shoulders/600.css";
+@import "@fontsource/ibm-plex-sans/400.css";
+@import "@fontsource/ibm-plex-sans/500.css";
+@import "@fontsource/ibm-plex-mono/400.css";
+
+@theme {
+  --color-bg: #EFEFE9;
+  --color-surface: #FFFFFF;
+  --color-text-primary: #1D2430;
+  --color-text-secondary: #6E7280;
+  --color-accent: #2E5C8A;
+  --color-accent-secondary: #B5651D;
+  --color-status-verified: #3F8F7A;
+  --color-status-transit: #C08A28;
+  --color-status-anomaly: #C1442E;
+  --color-border: #D8D8D0;
+
+  --font-display: "Big Shoulders", sans-serif;
+  --font-body: "IBM Plex Sans", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+}
