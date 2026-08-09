@@ -1,11 +1,21 @@
 import { useParams, Link } from 'react-router-dom'
-import { useLot } from './useLots'
+import { useLot, useDepartLot, useDeliverLot, useCloseLotPassport } from './useLots'
 import StatusBadge from '../../components/StatusBadge'
+import ConfirmButton from '../../components/ConfirmButton'
 import PassportTimeline from './PassportTimeline'
+
+const NEXT_ACTION = {
+  created: { key: 'depart', label: 'Marquer comme expédié', confirm: 'Confirmer le départ du lot ?' },
+  in_transit: { key: 'deliver', label: 'Confirmer la livraison', confirm: 'Confirmer la livraison du lot ?' },
+  delivered: { key: 'close', label: 'Clôturer le passeport', confirm: 'Clôturer définitivement le passeport ?' },
+}
 
 export default function LotDetailPage() {
   const { id } = useParams()
   const { data, isLoading, isError } = useLot(id)
+  const departLot = useDepartLot()
+  const deliverLot = useDeliverLot()
+  const closeLotPassport = useCloseLotPassport()
 
   if (isLoading) {
     return <p className="font-body text-text-secondary">Chargement du lot...</p>
@@ -20,6 +30,16 @@ export default function LotDetailPage() {
   }
 
   const lot = data.data
+  const nextAction = NEXT_ACTION[lot.status]
+
+  function handleAction() {
+    if (nextAction?.key === 'depart') departLot.mutate(lot.id)
+    if (nextAction?.key === 'deliver') deliverLot.mutate(lot.id)
+    if (nextAction?.key === 'close') closeLotPassport.mutate(lot.id)
+  }
+
+  const isActionPending = departLot.isPending || deliverLot.isPending || closeLotPassport.isPending
+  const actionError = departLot.isError || deliverLot.isError || closeLotPassport.isError
 
   return (
     <div>
@@ -34,8 +54,25 @@ export default function LotDetailPage() {
           </h2>
           <p className="font-mono text-xs text-text-secondary">{lot.uuid}</p>
         </div>
-        <StatusBadge status={lot.status} />
+        <div className="flex items-center gap-3">
+          <StatusBadge status={lot.status} />
+          {nextAction && (
+            <ConfirmButton
+              onConfirm={handleAction}
+              label={nextAction.label}
+              confirmLabel={nextAction.confirm}
+              disabled={isActionPending}
+              variant={nextAction.key === 'close' ? 'primary' : 'verified'}
+            />
+          )}
+        </div>
       </div>
+
+      {actionError && (
+        <div className="mb-4 px-3 py-2 rounded text-sm font-body bg-status-anomaly/10 text-status-anomaly border border-status-anomaly/30">
+          L'action a échoué. Vérifiez que vous avez les droits nécessaires (rôle Superviseur requis pour cette étape).
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="md:col-span-1 space-y-4">
