@@ -1,5 +1,6 @@
 const STATUS_STYLES = {
   active: { color: 'status-verified', label: 'Active' },
+  inactive: { color: 'text-secondary', label: 'Inactive' },
   pending_validation: { color: 'status-transit', label: 'En attente de validation' },
   suspended: { color: 'status-anomaly', label: 'Suspendue' },
 }
