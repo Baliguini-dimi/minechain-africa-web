@@ -2,13 +2,13 @@ import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useLot, useDepartLot, useDeliverLot, useCloseLotPassport } from './useLots'
 import { useResolveAnomaly } from '../anomalies/useAnomalies'
+import { useGpsHistory, useAssignGpsDevice, useRecordGpsPosition } from './useGpsTracking'
 import StatusBadge from '../../components/StatusBadge'
 import ConfirmButton from '../../components/ConfirmButton'
 import PassportTimeline from './PassportTimeline'
 import AnomalyFormModal from '../anomalies/AnomalyFormModal'
-import { QRCodeSVG } from 'qrcode.react'
 import GpsMap from './GpsMap'
-import { useGpsHistory, useAssignGpsDevice, useRecordGpsPosition } from './useGpsTracking'
+import { QRCodeSVG } from 'qrcode.react'
 
 const NEXT_ACTION = {
   created: { key: 'depart', label: 'Marquer comme expédié', confirm: 'Confirmer le départ du lot ?' },
@@ -26,12 +26,21 @@ const ANOMALY_TYPE_LABELS = {
 
 export default function LotDetailPage() {
   const { id } = useParams()
+
+  // Tous les hooks doivent être appelés ici, avant tout "return" conditionnel
   const { data, isLoading, isError } = useLot(id)
   const departLot = useDepartLot()
   const deliverLot = useDeliverLot()
   const closeLotPassport = useCloseLotPassport()
   const resolveAnomaly = useResolveAnomaly(id)
+  const { data: gpsData } = useGpsHistory(id)
+  const assignDevice = useAssignGpsDevice(id)
+  const recordPosition = useRecordGpsPosition(id)
+
   const [isAnomalyModalOpen, setIsAnomalyModalOpen] = useState(false)
+  const [deviceIdentifier, setDeviceIdentifier] = useState('')
+  const [manualLat, setManualLat] = useState('')
+  const [manualLng, setManualLng] = useState('')
 
   if (isLoading) {
     return <p className="font-body text-text-secondary">Chargement du lot...</p>
@@ -48,12 +57,6 @@ export default function LotDetailPage() {
   const lot = data.data
   const nextAction = NEXT_ACTION[lot.status]
   const anomalies = lot.anomalies ?? []
-  const { data: gpsData } = useGpsHistory(lot?.id)
-  const assignDevice = useAssignGpsDevice(lot?.id)
-  const recordPosition = useRecordGpsPosition(lot?.id)
-  const [deviceIdentifier, setDeviceIdentifier] = useState('')
-  const [manualLat, setManualLat] = useState('')
-  const [manualLng, setManualLng] = useState('')
 
   function handleAction() {
     if (nextAction?.key === 'depart') departLot.mutate(lot.id)
