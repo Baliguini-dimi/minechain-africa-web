@@ -7,6 +7,7 @@ const NAV_ITEMS = [
   { to: '/resource-types', label: 'Types de ressources' },
   { to: '/lots', label: 'Lots' },
   { to: '/users', label: 'Utilisateurs' },
+  { to: '/checkpoint-scan', label: 'Scanner' },
 ]
 
 export default function AppLayout({ children }) {

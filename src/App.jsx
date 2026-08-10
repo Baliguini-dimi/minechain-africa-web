@@ -8,6 +8,7 @@ import ResourceTypesListPage from './features/resource-types/ResourceTypesListPa
 import LotsListPage from './features/lots/LotsListPage.jsx'
 import LotDetailPage from './features/lots/LotDetailPage.jsx'
 import UsersListPage from './features/users/UsersListPage.jsx'
+import CheckpointScanPage from './features/checkpoints/CheckpointScanPage.jsx'
 
 function App() {
   return (
@@ -69,6 +70,16 @@ function App() {
           <ProtectedRoute>
             <AppLayout>
               <UsersListPage />
+            </AppLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/checkpoint-scan"
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <CheckpointScanPage />
             </AppLayout>
           </ProtectedRoute>
         }

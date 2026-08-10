@@ -1,13 +1,25 @@
+import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useLot, useDepartLot, useDeliverLot, useCloseLotPassport } from './useLots'
+import { useResolveAnomaly } from '../anomalies/useAnomalies'
 import StatusBadge from '../../components/StatusBadge'
 import ConfirmButton from '../../components/ConfirmButton'
 import PassportTimeline from './PassportTimeline'
+import AnomalyFormModal from '../anomalies/AnomalyFormModal'
+import { QRCodeSVG } from 'qrcode.react'
 
 const NEXT_ACTION = {
   created: { key: 'depart', label: 'Marquer comme expédié', confirm: 'Confirmer le départ du lot ?' },
   in_transit: { key: 'deliver', label: 'Confirmer la livraison', confirm: 'Confirmer la livraison du lot ?' },
   delivered: { key: 'close', label: 'Clôturer le passeport', confirm: 'Clôturer définitivement le passeport ?' },
+}
+
+const ANOMALY_TYPE_LABELS = {
+  ecart_poids: 'Écart de poids',
+  sceau_brise: 'Sceau brisé',
+  itineraire_inhabituel: 'Itinéraire inhabituel',
+  document_manquant: 'Document manquant',
+  autre: 'Autre',
 }
 
 export default function LotDetailPage() {
@@ -16,6 +28,8 @@ export default function LotDetailPage() {
   const departLot = useDepartLot()
   const deliverLot = useDeliverLot()
   const closeLotPassport = useCloseLotPassport()
+  const resolveAnomaly = useResolveAnomaly(id)
+  const [isAnomalyModalOpen, setIsAnomalyModalOpen] = useState(false)
 
   if (isLoading) {
     return <p className="font-body text-text-secondary">Chargement du lot...</p>
@@ -31,6 +45,7 @@ export default function LotDetailPage() {
 
   const lot = data.data
   const nextAction = NEXT_ACTION[lot.status]
+  const anomalies = lot.anomalies ?? []
 
   function handleAction() {
     if (nextAction?.key === 'depart') departLot.mutate(lot.id)
@@ -56,6 +71,12 @@ export default function LotDetailPage() {
         </div>
         <div className="flex items-center gap-3">
           <StatusBadge status={lot.status} />
+          <button
+            onClick={() => setIsAnomalyModalOpen(true)}
+            className="px-4 py-2 rounded border border-status-anomaly text-status-anomaly font-body text-sm font-medium hover:bg-status-anomaly/10"
+          >
+            Signaler une anomalie
+          </button>
           {nextAction && (
             <ConfirmButton
               onConfirm={handleAction}
@@ -70,7 +91,7 @@ export default function LotDetailPage() {
 
       {actionError && (
         <div className="mb-4 px-3 py-2 rounded text-sm font-body bg-status-anomaly/10 text-status-anomaly border border-status-anomaly/30">
-          L'action a échoué. Vérifiez que vous avez les droits nécessaires (rôle Superviseur requis pour cette étape).
+          L'action a échoué. Vérifiez que vous avez les droits nécessaires.
         </div>
       )}
 
@@ -110,9 +131,12 @@ export default function LotDetailPage() {
 
           {lot.qr_code && (
             <div className="bg-surface border border-border rounded-lg p-4">
-              <h3 className="font-body text-xs font-medium text-text-secondary uppercase tracking-wide mb-2">
+              <h3 className="font-body text-xs font-medium text-text-secondary uppercase tracking-wide mb-3">
                 QR Code
               </h3>
+              <div className="flex justify-center bg-white p-3 rounded mb-3">
+                <QRCodeSVG value={lot.qr_code.code_value} size={160} />
+              </div>
               <p className="font-mono text-xs text-text-secondary break-all">
                 {lot.qr_code.code_value}
               </p>
@@ -132,6 +156,50 @@ export default function LotDetailPage() {
               </div>
             </div>
           )}
+
+          {anomalies.length > 0 && (
+            <div className="bg-surface border border-border rounded-lg p-4">
+              <h3 className="font-body text-xs font-medium text-text-secondary uppercase tracking-wide mb-3">
+                Anomalies
+              </h3>
+              <div className="space-y-3">
+                {anomalies.map((anomaly) => (
+                  <div key={anomaly.id} className="border-l-4 border-status-anomaly pl-3">
+                    <p className="font-body text-sm text-text-primary">
+                      {ANOMALY_TYPE_LABELS[anomaly.type] ?? anomaly.type}
+                    </p>
+                    <p className="font-mono text-xs text-text-secondary mb-1">
+                      Sévérité : {anomaly.severity}
+                    </p>
+                    {anomaly.description && (
+                      <p className="font-body text-xs text-text-secondary mb-2">
+                        {anomaly.description}
+                      </p>
+                    )}
+                    <div className="flex items-center justify-between">
+                      <StatusBadge status={anomaly.status} />
+                      {anomaly.status === 'open' && (
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => resolveAnomaly.mutate({ anomalyId: anomaly.id, resolution: 'resolved' })}
+                            className="text-xs font-body text-status-verified hover:underline"
+                          >
+                            Résoudre
+                          </button>
+                          <button
+                            onClick={() => resolveAnomaly.mutate({ anomalyId: anomaly.id, resolution: 'dismissed' })}
+                            className="text-xs font-body text-text-secondary hover:underline"
+                          >
+                            Classer sans suite
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="md:col-span-2">
@@ -141,6 +209,10 @@ export default function LotDetailPage() {
           <PassportTimeline events={lot.passport?.events} />
         </div>
       </div>
+
+      {isAnomalyModalOpen && (
+        <AnomalyFormModal lotId={lot.id} onClose={() => setIsAnomalyModalOpen(false)} />
+      )}
     </div>
   )
 }

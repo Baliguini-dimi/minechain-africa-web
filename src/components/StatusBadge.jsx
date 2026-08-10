@@ -4,6 +4,10 @@ const STATUS_STYLES = {
   pending_validation: { color: 'status-transit', label: 'En attente de validation' },
   suspended: { color: 'status-anomaly', label: 'Suspendue' },
   invited: { color: 'status-transit', label: 'Invité' },
+  open: { color: 'status-anomaly', label: 'Ouverte' },
+  investigating: { color: 'status-transit', label: 'En cours d\'investigation' },
+  resolved: { color: 'status-verified', label: 'Résolue' },
+  dismissed: { color: 'text-secondary', label: 'Classée sans suite' },
 }
 
 export default function StatusBadge({ status }) {
