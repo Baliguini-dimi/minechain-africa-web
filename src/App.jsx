@@ -7,6 +7,7 @@ import SourcesListPage from './features/sources/SourcesListPage.jsx'
 import ResourceTypesListPage from './features/resource-types/ResourceTypesListPage.jsx'
 import LotsListPage from './features/lots/LotsListPage.jsx'
 import LotDetailPage from './features/lots/LotDetailPage.jsx'
+import UsersListPage from './features/users/UsersListPage.jsx'
 
 function App() {
   return (
@@ -58,6 +59,16 @@ function App() {
           <ProtectedRoute>
             <AppLayout>
               <LotDetailPage />
+            </AppLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/users"
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <UsersListPage />
             </AppLayout>
           </ProtectedRoute>
         }

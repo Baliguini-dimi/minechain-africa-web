@@ -3,6 +3,7 @@ const STATUS_STYLES = {
   inactive: { color: 'text-secondary', label: 'Inactive' },
   pending_validation: { color: 'status-transit', label: 'En attente de validation' },
   suspended: { color: 'status-anomaly', label: 'Suspendue' },
+  invited: { color: 'status-transit', label: 'Invité' },
 }
 
 export default function StatusBadge({ status }) {

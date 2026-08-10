@@ -6,6 +6,7 @@ const NAV_ITEMS = [
   { to: '/sources', label: 'Sources' },
   { to: '/resource-types', label: 'Types de ressources' },
   { to: '/lots', label: 'Lots' },
+  { to: '/users', label: 'Utilisateurs' },
 ]
 
 export default function AppLayout({ children }) {
