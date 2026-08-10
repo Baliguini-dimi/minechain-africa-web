@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from './useAuth.jsx'
+import { getRoleHomeRoute } from './roleHomeRoute'
 
 export default function LoginPage() {
   const navigate = useNavigate()
@@ -24,7 +25,7 @@ export default function LoginPage() {
       if (result.requiresTwoFactor) {
         setPendingUserId(result.userId)
       } else {
-        navigate('/')
+        navigate(getRoleHomeRoute(result.role))
       }
     } catch (err) {
       setError('Email ou mot de passe incorrect.')
@@ -39,8 +40,8 @@ export default function LoginPage() {
     setIsSubmitting(true)
 
     try {
-      await verifyTwoFactor(pendingUserId, code)
-      navigate('/')
+      const result = await verifyTwoFactor(pendingUserId, code)
+      navigate(getRoleHomeRoute(result.role))
     } catch (err) {
       setError('Code de vérification invalide.')
     } finally {
