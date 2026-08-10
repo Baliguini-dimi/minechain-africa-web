@@ -2,6 +2,7 @@ import { NavLink } from 'react-router-dom'
 import { useAuth } from '../features/auth/useAuth.jsx'
 
 const NAV_ITEMS = [
+  { to: '/dashboard', label: 'Tableau de bord' },
   { to: '/', label: 'Organisations', end: true },
   { to: '/sources', label: 'Sources' },
   { to: '/resource-types', label: 'Types de ressources' },

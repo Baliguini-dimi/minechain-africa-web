@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import LoginPage from './features/auth/LoginPage.jsx'
 import ProtectedRoute from './features/auth/ProtectedRoute.jsx'
 import AppLayout from './layouts/AppLayout.jsx'
+import DashboardPage from './features/dashboard/DashboardPage.jsx'
 import OrganizationsListPage from './features/organizations/OrganizationsListPage.jsx'
 import SourcesListPage from './features/sources/SourcesListPage.jsx'
 import ResourceTypesListPage from './features/resource-types/ResourceTypesListPage.jsx'
@@ -14,6 +15,16 @@ function App() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <DashboardPage />
+            </AppLayout>
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/"
         element={
