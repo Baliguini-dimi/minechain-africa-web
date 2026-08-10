@@ -7,6 +7,8 @@ import ConfirmButton from '../../components/ConfirmButton'
 import PassportTimeline from './PassportTimeline'
 import AnomalyFormModal from '../anomalies/AnomalyFormModal'
 import { QRCodeSVG } from 'qrcode.react'
+import GpsMap from './GpsMap'
+import { useGpsHistory, useAssignGpsDevice, useRecordGpsPosition } from './useGpsTracking'
 
 const NEXT_ACTION = {
   created: { key: 'depart', label: 'Marquer comme expédié', confirm: 'Confirmer le départ du lot ?' },
@@ -46,6 +48,12 @@ export default function LotDetailPage() {
   const lot = data.data
   const nextAction = NEXT_ACTION[lot.status]
   const anomalies = lot.anomalies ?? []
+  const { data: gpsData } = useGpsHistory(lot?.id)
+  const assignDevice = useAssignGpsDevice(lot?.id)
+  const recordPosition = useRecordGpsPosition(lot?.id)
+  const [deviceIdentifier, setDeviceIdentifier] = useState('')
+  const [manualLat, setManualLat] = useState('')
+  const [manualLng, setManualLng] = useState('')
 
   function handleAction() {
     if (nextAction?.key === 'depart') departLot.mutate(lot.id)
@@ -207,6 +215,65 @@ export default function LotDetailPage() {
             Frise du passeport
           </h3>
           <PassportTimeline events={lot.passport?.events} />
+
+          <div className="mt-6">
+            <h3 className="font-body text-xs font-medium text-text-secondary uppercase tracking-wide mb-4">
+              Suivi GPS
+            </h3>
+            <GpsMap positions={gpsData?.data} />
+
+            <div className="mt-4 bg-surface border border-border rounded-lg p-4 space-y-3">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Identifiant de balise (ex. BALISE-001)"
+                  value={deviceIdentifier}
+                  onChange={(e) => setDeviceIdentifier(e.target.value)}
+                  className="flex-1 px-3 py-2 rounded border border-border font-mono text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent"
+                />
+                <button
+                  onClick={() => assignDevice.mutate(deviceIdentifier)}
+                  disabled={assignDevice.isPending || !deviceIdentifier}
+                  className="px-4 py-2 rounded bg-accent text-white font-body text-sm font-medium hover:opacity-90 disabled:opacity-50"
+                >
+                  Associer
+                </button>
+              </div>
+
+              <div className="flex gap-2">
+                <input
+                  type="number"
+                  step="any"
+                  placeholder="Latitude"
+                  value={manualLat}
+                  onChange={(e) => setManualLat(e.target.value)}
+                  className="flex-1 px-3 py-2 rounded border border-border font-mono text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent"
+                />
+                <input
+                  type="number"
+                  step="any"
+                  placeholder="Longitude"
+                  value={manualLng}
+                  onChange={(e) => setManualLng(e.target.value)}
+                  className="flex-1 px-3 py-2 rounded border border-border font-mono text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent"
+                />
+                <button
+                  onClick={() => {
+                    recordPosition.mutate({ lat: parseFloat(manualLat), lng: parseFloat(manualLng) })
+                    setManualLat('')
+                    setManualLng('')
+                  }}
+                  disabled={recordPosition.isPending || !manualLat || !manualLng}
+                  className="px-4 py-2 rounded bg-accent text-white font-body text-sm font-medium hover:opacity-90 disabled:opacity-50"
+                >
+                  Enregistrer
+                </button>
+              </div>
+              <p className="font-body text-xs text-text-secondary">
+                En production, ces positions seront envoyées automatiquement par la balise IoT. Cette saisie manuelle sert uniquement au test.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
