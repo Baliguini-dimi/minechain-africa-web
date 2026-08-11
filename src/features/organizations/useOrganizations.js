@@ -11,10 +11,11 @@ async function createOrganization(payload) {
   return data
 }
 
-export function useOrganizations() {
+export function useOrganizations(options = {}) {
   return useQuery({
     queryKey: ['organizations'],
     queryFn: fetchOrganizations,
+    ...options,
   })
 }
 

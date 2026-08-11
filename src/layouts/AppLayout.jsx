@@ -1,18 +1,24 @@
 import { NavLink } from 'react-router-dom'
 import { useAuth } from '../features/auth/useAuth.jsx'
+import { NAV_ACCESS, canAccess } from '../features/auth/permissions'
 
-const NAV_ITEMS = [
-  { to: '/dashboard', label: 'Tableau de bord' },
-  { to: '/', label: 'Organisations', end: true },
-  { to: '/sources', label: 'Sources' },
-  { to: '/resource-types', label: 'Types de ressources' },
-  { to: '/lots', label: 'Lots' },
-  { to: '/users', label: 'Utilisateurs' },
-  { to: '/checkpoint-scan', label: 'Scanner' },
+const ALL_NAV_ITEMS = [
+  { key: 'dashboard', to: '/dashboard', label: 'Tableau de bord' },
+  { key: 'organizations', to: '/', label: 'Organisations', end: true },
+  { key: 'sources', to: '/sources', label: 'Sources' },
+  { key: 'resourceTypes', to: '/resource-types', label: 'Types de ressources' },
+  { key: 'lots', to: '/lots', label: 'Lots' },
+  { key: 'users', to: '/users', label: 'Utilisateurs' },
+  { key: 'checkpointScan', to: '/checkpoint-scan', label: 'Scanner' },
 ]
 
 export default function AppLayout({ children }) {
-  const { logout } = useAuth()
+  const { user, logout } = useAuth()
+  const roleName = user?.role?.name
+
+  const visibleNavItems = ALL_NAV_ITEMS.filter((item) =>
+    canAccess(NAV_ACCESS, item.key, roleName)
+  )
 
   return (
     <div className="min-h-screen bg-bg">
@@ -22,7 +28,7 @@ export default function AppLayout({ children }) {
             MineChain Africa
           </h1>
           <nav className="flex gap-4">
-            {NAV_ITEMS.map((item) => (
+            {visibleNavItems.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}

@@ -2,35 +2,43 @@ import { useEffect, useRef } from 'react'
 import { Html5Qrcode } from 'html5-qrcode'
 
 export default function QrScanner({ onScan, isActive }) {
-  const containerRef = useRef(null)
-  const scannerRef = useRef(null)
-
   useEffect(() => {
     if (!isActive) return
 
-    const scanner = new Html5Qrcode('qr-scanner-container')
-    scannerRef.current = scanner
+    const containerId = 'qr-scanner-container'
+    const container = document.getElementById(containerId)
+    if (container) container.innerHTML = ''
 
-    scanner
-      .start(
-        { facingMode: 'environment' },
-        { fps: 10, qrbox: { width: 250, height: 250 } },
-        (decodedText) => {
-          onScan(decodedText)
-          scanner.stop().catch(() => {})
-        },
-        () => {
-          // erreur de lecture frame par frame, ignorée volontairement (bruit normal du scan)
-        }
-      )
-      .catch(() => {
-        // caméra inaccessible (permission refusée, pas de caméra, etc.)
-      })
+    const scanner = new Html5Qrcode(containerId)
+    let hasScanned = false
+
+    const startPromise = scanner.start(
+      { facingMode: 'environment' },
+      { fps: 10, qrbox: { width: 250, height: 250 } },
+      (decodedText) => {
+        if (hasScanned) return
+        hasScanned = true
+        scanner
+          .stop()
+          .catch(() => {})
+          .finally(() => onScan(decodedText))
+      },
+      () => {
+        // bruit normal du scan frame par frame, ignoré volontairement
+      }
+    )
 
     return () => {
-      if (scannerRef.current) {
-        scannerRef.current.stop().catch(() => {})
-      }
+      startPromise
+        .then(() => {
+          if (!hasScanned) {
+            return scanner.stop()
+          }
+        })
+        .catch(() => {})
+        .finally(() => {
+          if (container) container.innerHTML = ''
+        })
     }
   }, [isActive, onScan])
 
@@ -38,7 +46,7 @@ export default function QrScanner({ onScan, isActive }) {
 
   return (
     <div className="rounded-lg overflow-hidden border border-border">
-      <div id="qr-scanner-container" ref={containerRef} className="w-full" />
+      <div id="qr-scanner-container" className="w-full" />
     </div>
   )
 }

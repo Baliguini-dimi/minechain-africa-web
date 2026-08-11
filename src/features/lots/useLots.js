@@ -31,10 +31,11 @@ async function closeLotPassport(id) {
   return data
 }
 
-export function useLots() {
+export function useLots(options = {}) {
   return useQuery({
     queryKey: ['lots'],
     queryFn: fetchLots,
+    ...options,
   })
 }
 
