@@ -7,20 +7,43 @@
 @import "leaflet/dist/leaflet.css";
 
 @theme {
+  /* Fond et surfaces */
   --color-bg: #EFEFE9;
   --color-surface: #FFFFFF;
   --color-text-primary: #1D2430;
   --color-text-secondary: #6E7280;
+  --color-border: #D8D8D0;
+
+  /* Accents institutionnels */
   --color-accent: #2E5C8A;
   --color-accent-secondary: #B5651D;
+
+  /* Statuts métier (lots, passeports, organisations) */
   --color-status-verified: #3F8F7A;
   --color-status-transit: #C08A28;
   --color-status-anomaly: #C1442E;
-  --color-border: #D8D8D0;
 
+  /* Alertes systeme (distinctes des statuts metier - phase 19) */
+  --color-alert-info: #2E5C8A;
+  --color-alert-warning: #C08A28;
+  --color-alert-critical: #C1442E;
+
+  /* Sidebar sombre - identite institutionnelle (phase 5) */
+  --color-sidebar-bg: #1D2430;
+  --color-sidebar-surface: #262E3D;
+  --color-sidebar-text: #EFEFE9;
+  --color-sidebar-text-muted: #8A93A3;
+  --color-sidebar-border: #333D4E;
+  --color-sidebar-active-bg: #2E5C8A;
+
+  /* Typographie */
   --font-display: "Big Shoulders", sans-serif;
   --font-body: "IBM Plex Sans", sans-serif;
   --font-mono: "IBM Plex Mono", monospace;
+
+  /* Dimensions structurelles */
+  --width-sidebar: 260px;
+  --height-topbar: 60px;
 }
 
 body {

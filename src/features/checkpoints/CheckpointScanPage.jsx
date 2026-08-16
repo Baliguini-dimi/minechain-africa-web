@@ -11,6 +11,7 @@ export default function CheckpointScanPage() {
   const [isScanning, setIsScanning] = useState(false)
   const [scannedToken, setScannedToken] = useState('')
   const [status, setStatus] = useState('ok')
+  const [measuredWeight, setMeasuredWeight] = useState('')
   const [observations, setObservations] = useState('')
   const [result, setResult] = useState(null)
   const [error, setError] = useState('')
@@ -35,11 +36,13 @@ export default function CheckpointScanPage() {
         qr_token: scannedToken,
         checkpoint_id: parseInt(checkpointId, 10),
         status,
+        measured_weight: measuredWeight ? parseFloat(measuredWeight) : undefined,
         observations: observations || undefined,
       })
       setResult(response)
       setScannedToken('')
       setObservations('')
+      setMeasuredWeight('')
       setStatus('ok')
     } catch (err) {
       setError("Le contrôle a échoué. Vérifiez le QR code et le checkpoint sélectionné.")
@@ -99,6 +102,19 @@ export default function CheckpointScanPage() {
                 ]}
                 required
               />
+
+              <div>
+                <label className="block text-xs font-medium font-body text-text-secondary mb-1">
+                  Poids mesuré (optionnel)
+                </label>
+                <input
+                  type="number"
+                  step="any"
+                  value={measuredWeight}
+                  onChange={(e) => setMeasuredWeight(e.target.value)}
+                  className="w-full px-3 py-2 rounded border border-border font-mono text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent"
+                />
+              </div>
 
               <div>
                 <label className="block text-xs font-medium font-body text-text-secondary mb-1">
