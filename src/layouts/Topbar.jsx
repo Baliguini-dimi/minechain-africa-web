@@ -2,6 +2,7 @@ import { LogOut } from 'lucide-react'
 import { useAuth } from '../features/auth/useAuth.jsx'
 import { ROLE_LABELS } from '../features/auth/roleLabels'
 import { NAV_ACCESS, canAccess } from '../features/auth/permissions'
+import NotificationBell from '../features/notifications/NotificationBell.jsx'
 import GlobalSearch from '../features/search/GlobalSearch.jsx'
 
 export default function Topbar({ title }) {
@@ -21,6 +22,7 @@ export default function Topbar({ title }) {
       </div>
 
       <div className="flex items-center gap-4 shrink-0">
+        <NotificationBell />
         {user && (
           <div className="text-right hidden sm:block">
             <p className="font-body text-sm text-text-primary leading-tight">{user.name}</p>
