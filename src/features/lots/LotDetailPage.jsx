@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { Info, GitCommitHorizontal, MapPin, ShieldAlert } from 'lucide-react'
+import { Info, GitCommitHorizontal, MapPin, ShieldAlert, FileText } from 'lucide-react'
 import { useLot, useDepartLot, useDeliverLot, useCloseLotPassport } from './useLots'
 import { useResolveAnomaly } from '../anomalies/useAnomalies'
 import { useGpsHistory, useAssignGpsDevice, useRecordGpsPosition } from './useGpsTracking'
@@ -11,6 +11,7 @@ import ConfirmButton from '../../components/ConfirmButton'
 import Tabs from '../../components/Tabs'
 import PassportTimeline from './PassportTimeline'
 import AnomalyFormModal from '../anomalies/AnomalyFormModal'
+import DocumentsPanel from '../documents/DocumentsPanel.jsx'
 import GpsMap from './GpsMap'
 import { QRCodeSVG } from 'qrcode.react'
 
@@ -306,6 +307,7 @@ export default function LotDetailPage() {
           { key: 'lifecycle', label: 'Cycle de vie', icon: GitCommitHorizontal, content: lifecycleTabContent },
           { key: 'gps', label: 'Carte et suivi', icon: MapPin, content: gpsTabContent },
           { key: 'anomalies', label: 'Anomalies', icon: ShieldAlert, badge: openAnomaliesCount, content: anomaliesTabContent },
+          { key: 'documents', label: 'Documents', icon: FileText, content: <DocumentsPanel lotId={lot.id} /> },
         ]}
       />
 

@@ -20,6 +20,7 @@ export const ACTION_ACCESS = {
   reportAnomaly: ['agent_checkpoint', 'superviseur'],
   resolveAnomaly: ['superviseur'],
   manageGps: ['admin_organisation', 'superviseur'],
+  uploadDocument: ['admin_organisation', 'superviseur', 'agent_checkpoint'],
 }
 
 export function canAccess(map, key, roleName) {
