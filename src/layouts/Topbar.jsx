@@ -1,20 +1,25 @@
-import { LogOut, ShieldAlert } from 'lucide-react'
+import { LogOut } from 'lucide-react'
 import { useAuth } from '../features/auth/useAuth.jsx'
 import { ROLE_LABELS } from '../features/auth/roleLabels'
+import GlobalSearch from '../features/search/GlobalSearch.jsx'
 
 export default function Topbar({ title }) {
   const { user, logout } = useAuth()
   const roleName = user?.role?.name
 
   return (
-    <header className="h-[var(--height-topbar)] bg-surface border-b border-border flex items-center justify-between px-6 sticky top-0 z-10">
-      <div>
+    <header className="h-[var(--height-topbar)] bg-surface border-b border-border flex items-center justify-between px-6 gap-6 sticky top-0 z-10">
+      <div className="shrink-0">
         {title && (
           <h2 className="font-body text-sm text-text-secondary">{title}</h2>
         )}
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex-1 flex justify-center">
+        <GlobalSearch />
+      </div>
+
+      <div className="flex items-center gap-4 shrink-0">
         {user && (
           <div className="text-right hidden sm:block">
             <p className="font-body text-sm text-text-primary leading-tight">{user.name}</p>
