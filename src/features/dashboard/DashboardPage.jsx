@@ -2,9 +2,13 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth.jsx'
 import { useOrganizations } from '../organizations/useOrganizations'
 import { useLots } from '../lots/useLots'
+import { useOpenAnomalies } from '../anomalies/useAnomalies'
+import { useActivity } from './useActivity'
 import StatCard from '../../components/StatCard'
 import StatusBadge from '../../components/StatusBadge'
 import StatusDonutChart from '../../components/StatusDonutChart'
+import AlertCenter from './AlertCenter'
+import ActivityTimeline from './ActivityTimeline'
 
 function PlatformDashboard() {
   const { data, isLoading } = useOrganizations({
@@ -60,6 +64,8 @@ function OrganizationDashboard() {
     refetchInterval: 5000,
     refetchOnWindowFocus: true,
   })
+  const { data: anomaliesData } = useOpenAnomalies({ refetchInterval: 5000 })
+  const { data: activityData } = useActivity({ refetchInterval: 5000 })
   const lots = data?.data ?? []
 
   if (isLoading) {
@@ -136,6 +142,11 @@ function OrganizationDashboard() {
             </table>
           )}
         </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+        <AlertCenter anomalies={anomaliesData?.data} />
+        <ActivityTimeline events={activityData?.data} />
       </div>
     </div>
   )

@@ -1,5 +1,10 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import apiClient from '../../services/apiClient'
+
+async function fetchOpenAnomalies() {
+  const { data } = await apiClient.get('/anomalies')
+  return data
+}
 
 async function reportAnomaly({ lotId, payload }) {
   const { data } = await apiClient.post(`/lots/${lotId}/anomalies`, payload)
@@ -9,6 +14,14 @@ async function reportAnomaly({ lotId, payload }) {
 async function resolveAnomaly({ anomalyId, resolution }) {
   const { data } = await apiClient.post(`/anomalies/${anomalyId}/resolve`, { resolution })
   return data
+}
+
+export function useOpenAnomalies(options = {}) {
+  return useQuery({
+    queryKey: ['anomalies', 'open'],
+    queryFn: fetchOpenAnomalies,
+    ...options,
+  })
 }
 
 export function useReportAnomaly(lotId) {
